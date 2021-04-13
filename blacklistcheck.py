@@ -12,22 +12,26 @@ from csv import DictReader
 
 ''' THIS SECTION GETS THE VEHICLE REGS '''
 
-#sets the url to be loaded
-url = "https://app.ibexres.com/legacy/accomreports/pax_manifest.php"
 
 #sets the options for the selenium Chrome driver
 options = webdriver.ChromeOptions() 
+
 #sets chrome driver to use the default chrome profile - which is logged in to ibex.
 options.add_argument("user-data-dir=Users/admin/Library/Application Support/Google/Chrome/Default") #Path to your chrome profile
 
 #sets up the chome driver.
 driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=options)
 
+#set wait
+wait = WebDriverWait(driver, 20)
+
+#sets the url to be loaded
+url = "https://app.ibexres.com/legacy/accomreports/pax_manifest.php"
+
 #calls the url
 driver.get(url)
 
 #waits until it detects that the iframe has been loaded. 
-wait = WebDriverWait(driver, 20)
 print("Guest manifest report is loading...")
 wait.until((EC.presence_of_element_located((By.ID, "theFrame"))))
 
@@ -84,6 +88,7 @@ for item in reglist:
 
 #finally, remove any duplicates from finallist by using the python dict technique.
 finallist = list(dict.fromkeys(finallist))
+print(finallist)
 
 ''' THIS SECTION GETS THE EMAIL ADDRESSES '''
 
@@ -125,6 +130,7 @@ driver.find_element_by_name("button_search").click()
 
 #waits until the results table has loaded. 
 wait.until((EC.presence_of_element_located((By.XPATH,"//*[@id='AutoNumber2']/tbody/tr[10]/td/table/tbody/tr[2]/td[1]"))))
+sleep(15)
 
 #get the value email address fields - NOTE THIS IS WHERE IT'S LIKELY TO FALL OVER IF THE LAYOUT OF THE TABLE CHANGES.
 ibexemailfields = driver.find_elements_by_xpath("//*[@id='AutoNumber2']/tbody/tr[10]/td/table/tbody/tr/td[4]/font")
@@ -141,6 +147,8 @@ driver.close()
 
 for item in emails:
     item = item.lower()
+
+print(emails)
 
 ''' THIS SECTION LOADS THE BLACKLIST OF EMAIL ADDRESSES AND VEHICLE REGISTRATIONS NUMBERS '''
 
